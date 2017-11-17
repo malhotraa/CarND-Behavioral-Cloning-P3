@@ -16,23 +16,31 @@ import keras.backend.tensorflow_backend as KTF
 
 SRC_PATH = '/home/ashish/Dev/CarND-Behavioral-Cloning-P3'
 DATA_PATH = '/home/ashish/Dev/CarND-Behavioral-Cloning-P3-data'
-RUN = 'run1'
-RUN_PATH = os.path.join(DATA_PATH, RUN)
-DRIVING_LOG_PATH = os.path.join(RUN_PATH, 'driving_log.csv')
+RUNS = ['run1', 'run2', 'run3']
+SAMPLE_TIMES = [1, 1, 1]
 IMGS_PATH = os.path.join(DATA_PATH, 'IMG')
 BATCH_SIZE = 8
 TENSORBOARD_PATH = os.path.join(SRC_PATH, 'tensorboard')
 MODELS_PATH = os.path.join(SRC_PATH, 'models')
 IMG_SHAPE = (160, 320, 3)
 STEERING_CORRECTION = 0.2
-ADD_FLIPS = False
+ADD_FLIPS = True
+ADD_SIDE_VIEWS = True
 
 headers = ['center_img_path', 'left_img_path', 'right_img_path', 'steering_angle', 'throttle', 'brake', 'speed']
 lines = []
-with open(DRIVING_LOG_PATH, 'r') as csvfile:
-    reader = csv.reader(csvfile)
-    for line in reader:
-        lines.append(line)
+runs = ""
+
+for idx, run in enumerate(RUNS):
+    run_path = os.path.join(DATA_PATH, run)
+    driving_log_path = os.path.join(run_path, 'driving_log.csv')
+
+    for _ in range(SAMPLE_TIMES[idx]):
+        runs = runs + RUNS[idx] + ","
+        with open(driving_log_path, 'r') as csvfile:
+            reader = csv.reader(csvfile)
+            for line in reader:
+                lines.append(line)
 
 def generator(samples, batch_size=BATCH_SIZE):
     num_samples = len(samples)
@@ -52,9 +60,9 @@ def generator(samples, batch_size=BATCH_SIZE):
                 steering_left = steering_center + STEERING_CORRECTION
                 steering_right = steering_center - STEERING_CORRECTION
 
-                center_img = cv2.imread(center_img_path)
-                left_img = cv2.imread(left_img_path)
-                right_img = cv2.imread(right_img_path)
+                center_img = cv2.cvtColor(cv2.imread(center_img_path), cv2.COLOR_BGR2RGB)
+                left_img = cv2.cvtColor(cv2.imread(left_img_path), cv2.COLOR_BGR2RGB)
+                right_img = cv2.cvtColor(cv2.imread(right_img_path), cv2.COLOR_BGR2RGB)
 
                 if ADD_FLIPS:
                     center_img_flipped = np.fliplr(center_img)
@@ -65,8 +73,12 @@ def generator(samples, batch_size=BATCH_SIZE):
                     steering_left_flipped = -1.0 * steering_left
                     steering_right_flipped = -1.0 * steering_right
 
-                images.extend([center_img, left_img, right_img])
-                steering_angles.extend([steering_center, steering_left, steering_right])
+                images.append(center_img)
+                steering_angles.append(steering_center)
+
+                if ADD_SIDE_VIEWS:
+                    images.extend([left_img, right_img])
+                    steering_angles.extend([steering_left, steering_right])
 
                 if ADD_FLIPS:
                     images.extend([center_img_flipped, left_img_flipped, right_img_flipped])
@@ -112,7 +124,9 @@ def nvidiaModel(input_shape):
 
     x = Flatten(name='flatten')(x)
     x = Dense(100, activation='relu', name='fc1')(x)
+    x = Dropout(0.5)(x)
     x = Dense(50, activation='relu', name='fc2')(x)
+    x = Dropout(0.5)(x)
     x = Dense(10, activation='relu', name='fc3')(x)
     output = Dense(1, name='output_layer')(x)
 
@@ -120,7 +134,7 @@ def nvidiaModel(input_shape):
     return model
 
 # Split data in to training and validaiton sets
-train_samples, validation_samples = train_test_split(lines, test_size=0.2, random_state=999)
+train_samples, validation_samples = train_test_split(lines, test_size=0.2, random_state=42)
 
 # Training new model
 ts = str(int(time.time()))
@@ -131,7 +145,7 @@ run_name = 'model={}-batch_size={}-num_epoch={}-steps_per_epoch={}-run-{}-ts={}'
                                                                           BATCH_SIZE,
                                                                           num_epochs,
                                                                           steps_per_epoch,
-                                                                          RUN,
+                                                                          runs,
                                                                           ts)
 print(run_name)
 tensorboard_loc = os.path.join(TENSORBOARD_PATH, run_name)
@@ -156,7 +170,7 @@ train_generator = generator(train_samples)
 validation_generator = generator(validation_samples)
 
 model = nvidiaModel(IMG_SHAPE)
-#model = load_model(os.path.join(MODELS_PATH, 'model-1510644464.h5'))
+#model = load_model(os.path.join(MODELS_PATH, 'model-1510810501.h5'))
 model.compile(loss='mse', optimizer='adam')
 print(model.summary())
 
