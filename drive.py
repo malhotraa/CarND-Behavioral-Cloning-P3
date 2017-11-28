@@ -12,6 +12,13 @@ from PIL import Image
 from flask import Flask
 from io import BytesIO
 
+import tensorflow as tf
+import keras.backend.tensorflow_backend as KTF
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+config.gpu_options.per_process_gpu_memory_fraction = 0.5 # allocate only 40% of total GPU memory to TensorFlow and hence Keras
+KTF.set_session(tf.Session(config=config))
+
 from keras.models import load_model
 import h5py
 from keras import __version__ as keras_version
@@ -44,7 +51,7 @@ class SimplePIController:
 
 
 controller = SimplePIController(0.1, 0.002)
-set_speed = 9
+set_speed = 12
 controller.set_desired(set_speed)
 
 

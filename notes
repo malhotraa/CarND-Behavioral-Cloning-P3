@@ -1,0 +1,254 @@
+# Runs data
+run1 - two laps clockwise and two laps counterclockwise
+run2 - recorded recovery lap with extra tries around turns with no lane lines on left/right; also recorded recovery from edge of lane to center multiple times
+run3 - recorded recover lap with extra tries around bridge; also recorded recovery from edge of lane to center lane many times
+run4 - recorded taking turns with no lanes; seems to screw up model predictions; going to avoid using this dataset
+run5 -
+run6 - skipped
+run7 - two laps clockwise with mostly mouse steering
+run8 - recorded recovery lap; recovery from edge of lane to center multiple times; steering with mouse
+run9 -
+run10 - recorded smooth lap clockwise and counterclockwise; using mouse steering
+run11 - recorded smooth laps clockwise and counterclokwise around track 2
+
+# Models
+
+## run1 models
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=479-run-run1-ts=1510723584
+STEERING_CORRECTION = 0.2
+best_val_loss =
+performance: model performs great until first turn after bridge which doesnt have lane lines on the right
+Going to try to retrain existing model with additional data on recovery from turns
+
+## run2 models
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=132-run-run2-ts=1510725167
+STEERING_CORRECTION = 0.2
+started from model-1510723584.h5 trained on run1 data; going to try to fine-tune
+performance: model runs off right side of road :(
+
+## run3 models
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=155-run-run3-ts=1510726011
+STEERING_CORRECTION = 0.2
+started from model-1510723584.h5 trained on run1 data; going to try to fine-tune
+performance: car reached first turn after bridge; fails at navigating turn without lane lines
+
+## run1,2,3, models; models trained on merge of all 3 runs
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=767-run-run1,run2,run3-ts=1510726762
+STEERING_CORRECTION = 0.2
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=767-run-run1,run2,run3-ts=1510732961
+STEERING_CORRECTION = 0.3
+performance: this model cant even reach bridge
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=767-run-run1,run2,run3-ts=model-1510769959
+started from model-1510723584.h5 trained on run1 data; going to try to fine-tune
+ADD_FLIPS = True, ADD_SIDE_VIEWS = False
+performance: this model crosses bridge and almost navigates first turn with no right lane
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=846-run-run1,run2,run3,run4-ts=1510776348
+started from model-1510723584.h5 trained on run1 data; going to try to fine-tune
+ADD_FLIPS = True, ADD_SIDE_VIEWS = False
+performance: this model is garbage; output is constant 0.41 degree steer to right_img_path
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=846-run-run1,run2,run3-ts=1510777751
+started from model-1510723584.h5 trained on run1 data; going to try to fine-tune
+ADD_FLIPS = True, ADD_SIDE_VIEWS = True
+performance: model crosses bridge and reaches first right turn with no lane markings and totally fails there
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=846-run-run1,run2,run3-run2-ts=1510784029
+started from model-1510723584.h5 trained on run1 data; going to try to fine-tune
+ADD_FLIPS = True, ADD_SIDE_VIEWS = True
+performance: model crosses bridge and reaches first right turn with no lane markings and totally fails there; doesnt seem to do as well on recovering from right lanes to center
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=846-run-run1,run2,run3,run5-ts=1510786465
+started from model-1510723584.h5 trained on run1 data; going to try to fine-tune
+ADD_FLIPS = True, ADD_SIDE_VIEWS = False
+performance: model is garbage
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=848-run-run1,run2,run3,run5-ts=1510787123
+started from model-1510723584.h5 trained on run1 data; going to try to fine-tune
+ADD_FLIPS = False, ADD_SIDE_VIEWS = True
+performance: model crosses bridge and reaches first right turn with no lane markings and totally fails there; doesnt seem to do as well on recovering from right lanes to center
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=767-run-run1,run2,run3-ts=1510787967
+STEERING_CORRECTION = 0.15, ADD_FLIPS = True, ADD_SIDE_VIEWS = False
+performance: garbage
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=767-run-run1,run2,run3-ts=
+started from model-1510769959.h5 trained on run1, run2, run3 data; going to try to fine-tune
+STEERING_CORRECTION = 0.2, ADD_FLIPS = True, ADD_SIDE_VIEWS = False
+performance: model fails at first left turn with no lane markings
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=767-run-run7-ts=1510801604
+started from model-1510723584.h5 trained on run7 data; going to try to fine-tune
+STEERING_CORRECTION = 0.2, ADD_FLIPS = True, ADD_SIDE_VIEWS = False
+performance: model fails at first left turn with no lane markings
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=315-run-run7-ts=1510802502
+STEERING_CORRECTION = 0.2, ADD_FLIPS = True, ADD_SIDE_VIEWS = False
+performance: model cannot keep vehicle between lines at all
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=432-run-run7,run8-ts=1510802971
+STEERING_CORRECTION = 0.2, ADD_FLIPS = True, ADD_SIDE_VIEWS = False
+performance: garbage
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=603-run-run7,run2,run3-ts=1510803654
+STEERING_CORRECTION = 0.2, ADD_FLIPS = True, ADD_SIDE_VIEWS = False
+best_val_loss: 0.04288
+performance: garbage
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=767-run-run1,run2,run3-ts=1510804393
+started from model-1510723584.h5 trained on run1 data; going to try to fine-tune
+STEERING_CORRECTION = 0.2, ADD_FLIPS = True, ADD_SIDE_VIEWS = False
+best_val_loss: 0.01637
+performance: model crosses bridge and reaches first right turn with no lane markings and totally fails there; doesnt seem to do as well on recovering from right lanes to center
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=767-run-run1,run2,run3-ts=1510805215
+STEERING_CORRECTION = 0.1, ADD_FLIPS = True, ADD_SIDE_VIEWS = True
+best_val_loss: 0.01472
+performance: model swerves out of lane around first set of red stripes
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1247-run-run1,run1,run2,run3-ts=1510807041
+STEERING_CORRECTION = 0.1, ADD_FLIPS = True, ADD_SIDE_VIEWS = True
+best_val_loss: 0.01260
+performance: model cant navigate first left turn with no right lane markings; also doesnt seem to do well with red stripes
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=856-run-run1,run2,run3,run9,run9,run9,run9,run9,-ts=1510809732
+STEERING_CORRECTION = 0.1, ADD_FLIPS = True, ADD_SIDE_VIEWS = True
+best_val_loss: 0.02797
+performance: model is garbage; giving constant 0.2 R prediction
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=785-run-run1,run2,run3,run9,-ts=1510810501
+STEERING_CORRECTION = 0.1, ADD_FLIPS = True, ADD_SIDE_VIEWS = True
+best_val_loss: 0.01466
+performance:  model cant navigate first left turn with no right lane markings; also doesnt seem to do well with red stripes
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=821-run-run1,run2,run3,run9,run9,run9,-ts=1510812760
+started from model-1510810501.h5 trained on run1,run3,run3,run9 data; going to try to fine-tune
+STEERING_CORRECTION = 0.1, ADD_FLIPS = True, ADD_SIDE_VIEWS = True
+best_val_loss: 0.01496
+performance: model swerved off lane to the right :(
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=785-run-run1,run2,run3,run9,-ts=1510813930
+First model trained with images converted to RGB instead of cv2 BGR default
+STEERING_CORRECTION = 0.1, ADD_FLIPS = True, ADD_SIDE_VIEWS = True
+best_val_loss: 0.02915
+performance: garbage model
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=767-run-run1,run2,run3,-ts=1510814620
+model trained with images converted to RGB instead of cv2 BGR default
+STEERING_CORRECTION = 0.2, ADD_FLIPS = True, ADD_SIDE_VIEWS = True
+best_val_loss: 0.01607
+performance: FIRST MODEL THAT MAKES IT FULL LOOP AROUND TRACK 1. Car goes over left/right lane markings a couple places in the track.
+Also comes too close to left turn with no right lane marking. Should be able to improve with a little more data collected around turns.
+Looks like converting images to RGB gives a huge boost in performance.
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1054-run-run1,run2,run2,run3,run3,-ts=1510824783
+model trained with images converted to RGB instead of cv2 BGR default
+STEERING_CORRECTION = 0.2, ADD_FLIPS = True, ADD_SIDE_VIEWS = True
+best_val_loss: 0.05081
+performance: model is garbage, predicts constant zero steering angle
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=634-run-run1,run3,-ts=1510827074
+RGB images, STEERING_CORRECTION = 0.2, ADD_FLIPS = True, ADD_SIDE_VIEWS = True
+best_val_loss: 0.01564
+performance: model swerves outside the lane towards right side before bridge
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=767-run-run1,run2,run3,-ts=1510866933
+Trying to recreate performance of model-1510814620.h5
+RGB images, STEERING_CORRECTION = 0.2, ADD_FLIPS = True, ADD_SIDE_VIEWS = True
+best_val_loss: 0.04911
+performance: garbage model
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=767-run-run1,run2,run3,-ts=1510867877
+Trying to recreate performance of model-1510814620.h5
+RGB images, STEERING_CORRECTION = 0.2, ADD_FLIPS = True, ADD_SIDE_VIEWS = True, random_seed = 42
+best_val_loss: 0.01773
+performance: Model does fairly well but fails to navigate right/left turns without lane markings
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=767-run-run1,run2,run3,-ts=1510870452
+nvidiaModel:
+x = Lambda(lambda img: (img / 255.0) - 0.5)(inputs)
+x = Cropping2D(cropping=((70, 25), (0, 0)))(x)
+x = Conv2D(36, (5, 5), strides=(2, 2), activation='relu', name='conv1')(inputs)
+x = Conv2D(36, (5, 5), strides=(2, 2), activation='relu', name='conv2')(x)
+x = Conv2D(48, (5, 5), strides=(2, 2), activation='relu', name='conv3')(x)
+x = Conv2D(64, (3, 3), activation='relu', name='conv4')(x)
+x = Conv2D(64, (3, 3), activation='relu', name='conv5')(x)
+
+x = Flatten(name='flatten')(x)
+x = Dense(100, activation='relu', name='fc1')(x)
+x = Dense(50, activation='relu', name='fc2')(x)
+x = Dense(10, activation='relu', name='fc3')(x)
+output = Dense(1, name='output_layer')(x)
+RGB images, STEERING_CORRECTION = 0.2, ADD_FLIPS = True, ADD_SIDE_VIEWS = True, random_seed = 42
+best_val_loss: 0.01726
+performance: model keeps driving on right lane marking. Cannot navigate left turn without right lane marking
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=767-run-run1,run2,run3,-ts=1510873652 (commit 86d9a393ab41b7c47521617d5e8e9efb314017e7)
+Trying to improve performance of model-1510814620.h5 by adding dropout between Dense layers (prob 0.5)
+nvidiaModel:
+x = Conv2D(24, (5, 5), strides=(2, 2), activation='relu', name='conv1')(inputs)
+x = Conv2D(36, (5, 5), strides=(2, 2), activation='relu', name='conv2')(x)
+x = Conv2D(48, (5, 5), strides=(2, 2), activation='relu', name='conv3')(x)
+x = Conv2D(64, (3, 3), activation='relu', name='conv4')(x)
+x = Conv2D(64, (3, 3), activation='relu', name='conv5')(x)
+
+x = Flatten(name='flatten')(x)
+x = Dense(100, activation='relu', name='fc1')(x)
+x = Dropout(0.5)(x)
+x = Dense(50, activation='relu', name='fc2')(x)
+x = Dropout(0.5)(x)
+x = Dense(10, activation='relu', name='fc3')(x)
+output = Dense(1, name='output_layer')(x)
+RGB images, STEERING_CORRECTION = 0.2, ADD_FLIPS = True, ADD_SIDE_VIEWS = True, random_seed = 42
+best_val_loss: 0.01659
+performance: SEcOND MODEL THAT LOOPS AROUND TRACK. NEVER CROSSES LANE LINES. TESTED SUCCESSFULLY AT 9, 15, 30 MPH.
+There is still some room for improvement. Sometimes car comes too close to the lane edge.
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=235-run-run1,run2,run3,-ts=1510888539
+Everything same as previous model except filtering out images with zero degrees steering_angle
+best_val_loss: 0.03125
+performance: model performs really well. However fails at first left turn with no right lane.
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=235-run-run1,run2,run3,-ts=1510889549
+Staring from model-1510888539.h5. Everything same as previous model. Going to try to train with patience of 5. Doesnt seem like model has learned all there is to learn.
+best_val_loss: 0.02790
+performance: model goes over some lane lines. Navigates first left turn then swerves out of left lane line.
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=497-run-run1,run2,run3,-ts=1510895778
+Train_samples.shape 3980
+Validation_samples.shape 995
+Filtering out images with zero degrees steering_angle using threshold 0.5 (50% should get filtered out)
+RGB images, STEERING_CORRECTION = 0.2, ADD_FLIPS = True, ADD_SIDE_VIEWS = True, random_seed = 42
+best_val_loss: 0.06534
+performance: garbage model; predicts 0.02 constantly
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=767-run-run1,run2,run3,-ts=1510897102
+Train_samples.shape 6138
+Validation_samples.shape 1535
+RGB images, STEERING_CORRECTION = 0.225, ADD_FLIPS = True, ADD_SIDE_VIEWS = True, KEEP_ZERO = True, random_seed = 42
+best_val_loss: 0.01620
+performance: model goes over right lane. killed early
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=767-run-run1,run2,run3,-ts=1510902287
+Train_samples.shape 6138
+Validation_samples.shape 1535
+RGB images, STEERING_CORRECTION = 0.15, ADD_FLIPS = True, ADD_SIDE_VIEWS = True, KEEP_ZERO = True, random_seed = 42
+best_val_loss: 0.03997
+performance: 0.03997
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1130-run-run1,run2,run3,run10,-ts=1510907927
+First model using new run10 data
+Train_samples.shape 9045
+Validation_samples.shape 2262
+RGB images, STEERING_CORRECTION = 0.2, ADD_FLIPS = True, ADD_SIDE_VIEWS = True, random_seed = 42
+best_val_loss: 0.01210; killed model training after 3 epochs with no improvement; may fine-tune tomorrow
+performance: model grazes right lane once; model fails to navigate first sharp right turn with red stripes :(. Model may be over-fitting.
+Will retry training with stronger regularization
+
+TODO:
+* Experiment with steering_correction parameter
+* Try different sampling strategies from different runs (maybe using probablities)
+* Need to try filtering out data within 0.15 to -0.15 steering angle etc.
+* Also need to figure out data collection for track 2.

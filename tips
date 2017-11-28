@@ -1,0 +1,14 @@
+TIPS
+
+I have finally obtained a model that drives through both tracks at 12 mph fixed. I'm using a very simple network of 3 relu convo layers, 1 max pooling, 3 relu dense layers and 2 dropout layers.
+I'm using a 80/20 train/validation split on 17500 images for 15 training epochs; it takes 30 sec per epoch on NVIDIA 1060 GPU for the total training time of 450 seconds.
+The images are obtained from driving 3 laps on track 1 and 3 laps on track 2, plus recordings of carefully driving around 3 or 4 sharp turns for a couple of times each.
+I'm using both side cameras with a correction of 0.2 and also flipping the images; removing top and bottom portions and also selecting a trapezoidal region of interest as in the lane finding project.
+I chose not to augment the images with brightness changes or any other distortions; I do brightness histogram equalization instead, both when training and when driving.
+The 17500 images are obtained from the total dataset of 67500 images by first flipping every image to get 135000 images and then downsampling by bucketing into 8 buckets according to the steering angle and
+randomly removing images from every bucket (except for the two most extreme ones) to make them approximately the same size.
+One of the most important improvements I had was to run a random search for hyperparameters for 3 days; I was very surprised to see that,
+while dropouts in front of the 1st and 3rd dense layers improve validation score, having a dropout in front of the 2nd dense layer actually makes the validation score much worse.
+I chose and fixed the most impactful hyperparameters by calculating Spearman rank score between each of the hyperparameters and the smallest validation loss for each run.
+Hope someone here finds inspiration in the fact that pretrained networks, huge training sets and long training times aren't really a requirement here; the random search for
+hyperparams was using an even smaller (2x to 4x smaller)  dataset, making it run for 150-300 seconds per each network configuration.
