@@ -38,14 +38,36 @@ run32 - extra drive around sharp S turn clockwise
 
 # models
 
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1957-run-run11,run22,run23,run25,run30,run31,run32,run16,run1,run2,run3,-ts=1511914157
+Train_samples.shape 15659
+Validation_samples.shape 3915
+Arch same, KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.45
+best_val_loss = 0.01675
+performance:
+    * t1:
+    * t2: cannot navgiate shadow turns early in t2
+Notes:
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=2009-run-run11,run22,run23,run25,run30,run31,run32,run16,run1,run2,run3,-ts=1511903997
+Same as best performing model-1511521285.h5 except with lower KEEP_ZERO_STEERING_ANGLE_THRESHOLD
+Train_samples.shape 16079
+Validation_samples.shape 4020
+Arch same, KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.35
+best_val_loss = 0.01751
+performance:
+    * t1: does fine
+    * t2: cannot navgiate shadow turns early in t2
+
 model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=2115-run-run11,run12,run22,run23,run25,run30,run31,run32,run16,run1,run2,run3,-ts=1511885681
 Adding run12 data back in. Would like previous model to navigate turns better.
 Train_samples.shape 16923
 Validation_samples.shape 4231
 Arch same, KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.4
+best_val_loss = 0.01653
 performance:
-    * t1:
-    * t2:
+    * t1: did not test
+    * t2: cannot navgiate shadow turns early in t2
 
 model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1984-run-run11,run22,run23,run25,run30,run31,run32,run16,run1,run2,run3,-ts=1511521285
 Adding run11 data back in. Looks like previous model did not have enough data to learn anything.

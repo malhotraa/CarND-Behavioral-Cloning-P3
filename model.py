@@ -16,7 +16,7 @@ import keras.backend.tensorflow_backend as KTF
 
 SRC_PATH = '/home/ashish/Dev/CarND-Behavioral-Cloning-P3'
 DATA_PATH = '/home/ashish/Dev/CarND-Behavioral-Cloning-P3-data'
-RUNS = ['run11','run12','run22','run23','run25','run30','run31','run32','run16','run1','run2','run3']
+RUNS = ['run11','run22','run23','run25','run30','run31','run32','run16','run1','run2','run3']
 #['run1','run2','run3','run22','run23','run24','run25','run12','run13','run14','run15']
 BATCH_SIZE = 8
 TENSORBOARD_PATH = os.path.join(SRC_PATH, 'tensorboard')
