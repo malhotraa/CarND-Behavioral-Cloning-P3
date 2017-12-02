@@ -17,7 +17,7 @@ import keras.backend.tensorflow_backend as KTF
 
 SRC_PATH = '/udacity/ashish/CarND-Behavioral-Cloning-P3'
 DATA_PATH = '/udacity/data/CarND-Behavioral-Cloning-P3-data'
-RUNS = ['run11','run12','run13','run14','run15','run16','run1','run2','run3']
+RUNS = ['run1','run2','run3']
 BATCH_SIZE = 8
 TENSORBOARD_PATH = os.path.join(SRC_PATH, 'tensorboard')
 MODELS_PATH = os.path.join(SRC_PATH, 'models')
@@ -26,20 +26,12 @@ STEERING_CORRECTION = 0.2
 ADD_FLIPS = True
 ADD_SIDE_VIEWS = True
 KEEP_ZERO = False
-KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.3
-NORMALIZE_BRIGHTNESS = False
 
 headers = ['center_img_path', 'left_img_path', 'right_img_path', 'steering_angle', 'throttle', 'brake', 'speed']
 lines = []
 runs = ""
 
-#def normalize_brightness(img):
-#    img_yuv = cv2.cvtColor(img, cv2.COLOR_RGB2YUV)
-#    # equalize the histogram of the Y channel
-#    img_yuv[:,:,0] = cv2.equalizeHist(img_yuv[:,:,0])
-#    # convert the YUV image back to RGB format
-#    return cv2.cvtColor(img_yuv, cv2.COLOR_YUV2RGB)
-
+# Load image paths from specified RUNS
 for idx, run in enumerate(RUNS):
     run_path = os.path.join(DATA_PATH, run)
     driving_log_path = os.path.join(run_path, 'driving_log.csv')
@@ -50,17 +42,7 @@ for idx, run in enumerate(RUNS):
         for line in reader:
             lines.append(line)
 
-if not KEEP_ZERO:
-    temp = []
-    np.random.seed(999)
-    # Skip 0 deg steering angle images
-    for line in lines:
-        if float(line[3].strip()) != 0.0:
-            temp.append(line)
-        elif np.random.uniform() > KEEP_ZERO_STEERING_ANGLE_THRESHOLD:
-            temp.append(line)
-    lines = temp
-
+# Create generator to generate batches on the fly since all image data is too large to fit in memory
 def generator(samples, batch_size=BATCH_SIZE):
     num_samples = len(samples)
     while 1: # Loop forever so the generator never terminates
@@ -87,15 +69,6 @@ def generator(samples, batch_size=BATCH_SIZE):
                 left_img = cv2.cvtColor(cv2.imread(left_img_path), cv2.COLOR_BGR2RGB)
                 right_img = cv2.cvtColor(cv2.imread(right_img_path), cv2.COLOR_BGR2RGB)
 
-                #center_img = imread(center_img_path)
-                #left_img = imread(left_img_path)
-                #right_img = imread(right_img_path)
-
-                if NORMALIZE_BRIGHTNESS:
-                    center_img = normalize_brightness(center_img)
-                    left_img = normalize_brightness(left_img)
-                    right_img = normalize_brightness(right_img)
-
                 if ADD_FLIPS:
                     center_img_flipped = np.fliplr(center_img)
                     left_img_flipped = np.fliplr(left_img)
@@ -116,7 +89,6 @@ def generator(samples, batch_size=BATCH_SIZE):
                     images.extend([center_img_flipped, left_img_flipped, right_img_flipped])
                     steering_angles.extend([steering_center_flipped, steering_left_flipped, steering_right_flipped])
 
-            # trim image to only see section with road
             X_train = np.array(images)
             y_train = np.array(steering_angles)
             yield shuffle(X_train, y_train)
@@ -146,7 +118,9 @@ def vgg16Model(input_shape):
 def nvidiaModel(input_shape):
     inputs = Input(shape=input_shape)
 
+    # Normalize data
     x = Lambda(lambda img: (img / 255.0) - 0.5)(inputs)
+    # Remove sky and hood of the car from input
     x = Cropping2D(cropping=((70, 25), (0, 0)))(x)
     x = Conv2D(24, (5, 5), strides=(2, 2), activation='relu', name='conv1')(inputs)
     x = Conv2D(36, (5, 5), strides=(2, 2), activation='relu', name='conv2')(x)
@@ -155,13 +129,11 @@ def nvidiaModel(input_shape):
     x = Conv2D(64, (3, 3), activation='relu', name='conv5')(x)
 
     x = Flatten(name='flatten')(x)
-    x = Dropout(0.5)(x)
     x = Dense(100, activation='relu', name='fc1')(x)
-    #x = Dropout(0.5)(x)
+    x = Dropout(0.5)(x)
     x = Dense(50, activation='relu', name='fc2')(x)
-    #x = Dropout(0.5)(x)
+    x = Dropout(0.5)(x)
     x = Dense(10, activation='relu', name='fc3')(x)
-    #x = Dropout(0.5)(x)
     output = Dense(1, name='output_layer')(x)
 
     model = Model(inputs=inputs, outputs=output)
@@ -206,12 +178,13 @@ callbacks_list = [modelCheckpoint, earlyStopping, tensorboard]
 train_generator = generator(train_samples)
 validation_generator = generator(validation_samples)
 
+# Compile model
 model = nvidiaModel(IMG_SHAPE)
-#model = load_model(os.path.join(MODELS_PATH, 'model-1511521285.h5'))
 optim = Adam(lr=0.0001)
 model.compile(loss='mse', optimizer=optim)
 print(model.summary())
 
+# Train model
 model.fit_generator(train_generator,
                     steps_per_epoch=steps_per_epoch,
                     validation_data=validation_generator,
@@ -220,5 +193,4 @@ model.fit_generator(train_generator,
                     callbacks=callbacks_list,
                     epochs=num_epochs)
 
-#model.save(checkpoint_loc)
 print('Done training {}'.format(run_name))
