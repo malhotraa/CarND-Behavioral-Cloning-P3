@@ -18,18 +18,30 @@ import keras.backend.tensorflow_backend as KTF
 SRC_PATH = '/udacity/ashish/CarND-Behavioral-Cloning-P3'
 DATA_PATH = '/udacity/data/CarND-Behavioral-Cloning-P3-data'
 RUNS = ['run1','run2','run3']
-BATCH_SIZE = 8
 TENSORBOARD_PATH = os.path.join(SRC_PATH, 'tensorboard')
 MODELS_PATH = os.path.join(SRC_PATH, 'models')
 IMG_SHAPE = (160, 320, 3)
+
+# Hyperparams
+BATCH_SIZE = 8
 STEERING_CORRECTION = 0.2
 ADD_FLIPS = True
 ADD_SIDE_VIEWS = True
-KEEP_ZERO = False
+KEEP_ZERO = True
+KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.3
+NORMALIZE_BRIGHTNESS = False
 
 headers = ['center_img_path', 'left_img_path', 'right_img_path', 'steering_angle', 'throttle', 'brake', 'speed']
 lines = []
 runs = ""
+
+# Helper method to normalize brightness
+def normalize_brightness(img):
+    img_yuv = cv2.cvtColor(img, cv2.COLOR_RGB2YUV)
+    # equalize the histogram of the Y channel
+    img_yuv[:,:,0] = cv2.equalizeHist(img_yuv[:,:,0])
+    # convert the YUV image back to RGB format
+    return cv2.cvtColor(img_yuv, cv2.COLOR_YUV2RGB)
 
 # Load image paths from specified RUNS
 for idx, run in enumerate(RUNS):
@@ -41,6 +53,17 @@ for idx, run in enumerate(RUNS):
         reader = csv.reader(csvfile)
         for line in reader:
             lines.append(line)
+
+# Skip certain percentage of zero degree steering angle images
+if not KEEP_ZERO:
+    temp = []
+    np.random.seed(999)
+    for line in lines:
+        if float(line[3].strip()) != 0.0:
+            temp.append(line)
+        elif np.random.uniform() > KEEP_ZERO_STEERING_ANGLE_THRESHOLD:
+            temp.append(line)
+    lines = temp
 
 # Create generator to generate batches on the fly since all image data is too large to fit in memory
 def generator(samples, batch_size=BATCH_SIZE):
@@ -69,6 +92,11 @@ def generator(samples, batch_size=BATCH_SIZE):
                 left_img = cv2.cvtColor(cv2.imread(left_img_path), cv2.COLOR_BGR2RGB)
                 right_img = cv2.cvtColor(cv2.imread(right_img_path), cv2.COLOR_BGR2RGB)
 
+                if NORMALIZE_BRIGHTNESS:
+                    center_img = normalize_brightness(center_img)
+                    left_img = normalize_brightness(left_img)
+                    right_img = normalize_brightness(right_img)
+                
                 if ADD_FLIPS:
                     center_img_flipped = np.fliplr(center_img)
                     left_img_flipped = np.fliplr(left_img)
@@ -77,7 +105,7 @@ def generator(samples, batch_size=BATCH_SIZE):
                     steering_center_flipped = -1.0 * steering_center
                     steering_left_flipped = -1.0 * steering_left
                     steering_right_flipped = -1.0 * steering_right
-
+                    
                 images.append(center_img)
                 steering_angles.append(steering_center)
 
@@ -161,7 +189,7 @@ tensorboard_loc = os.path.join(TENSORBOARD_PATH, run_name)
 checkpoint_loc = os.path.join(MODELS_PATH, 'model-{}.h5'.format(ts))
 
 earlyStopping = EarlyStopping(monitor='val_loss',
-                              patience=5,
+                              patience=2,
                               verbose=1,
                               min_delta = 0.0001,
                               mode='min')
