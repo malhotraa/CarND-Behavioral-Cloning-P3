@@ -4,6 +4,7 @@ import time
 import h5py
 import cv2
 import numpy as np
+from skimage.io import imread
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 from keras.regularizers import l2
@@ -14,10 +15,9 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 from keras.losses import binary_crossentropy
 import keras.backend.tensorflow_backend as KTF
 
-SRC_PATH = '/home/ashish/Dev/CarND-Behavioral-Cloning-P3'
-DATA_PATH = '/home/ashish/Dev/CarND-Behavioral-Cloning-P3-data'
-RUNS = ['run11','run22','run23','run25','run30','run31','run32','run16','run1','run2','run3']
-#['run1','run2','run3','run22','run23','run24','run25','run12','run13','run14','run15']
+SRC_PATH = '/udacity/ashish/CarND-Behavioral-Cloning-P3'
+DATA_PATH = '/udacity/data/CarND-Behavioral-Cloning-P3-data'
+RUNS = ['run11','run12','run13','run14','run15','run16','run1','run2','run3']
 BATCH_SIZE = 8
 TENSORBOARD_PATH = os.path.join(SRC_PATH, 'tensorboard')
 MODELS_PATH = os.path.join(SRC_PATH, 'models')
@@ -26,19 +26,19 @@ STEERING_CORRECTION = 0.2
 ADD_FLIPS = True
 ADD_SIDE_VIEWS = True
 KEEP_ZERO = False
-KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.4
+KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.3
 NORMALIZE_BRIGHTNESS = False
 
 headers = ['center_img_path', 'left_img_path', 'right_img_path', 'steering_angle', 'throttle', 'brake', 'speed']
 lines = []
 runs = ""
 
-def normalize_brightness(img):
-    img_yuv = cv2.cvtColor(img, cv2.COLOR_RGB2YUV)
-    # equalize the histogram of the Y channel
-    img_yuv[:,:,0] = cv2.equalizeHist(img_yuv[:,:,0])
-    # convert the YUV image back to RGB format
-    return cv2.cvtColor(img_yuv, cv2.COLOR_YUV2RGB)
+#def normalize_brightness(img):
+#    img_yuv = cv2.cvtColor(img, cv2.COLOR_RGB2YUV)
+#    # equalize the histogram of the Y channel
+#    img_yuv[:,:,0] = cv2.equalizeHist(img_yuv[:,:,0])
+#    # convert the YUV image back to RGB format
+#    return cv2.cvtColor(img_yuv, cv2.COLOR_YUV2RGB)
 
 for idx, run in enumerate(RUNS):
     run_path = os.path.join(DATA_PATH, run)
@@ -75,6 +75,10 @@ def generator(samples, batch_size=BATCH_SIZE):
                 left_img_path = sample[1].strip()
                 right_img_path = sample[2].strip()
 
+                center_img_path = center_img_path.replace('/home/ashish/Dev','/udacity/data')
+                left_img_path = left_img_path.replace('/home/ashish/Dev','/udacity/data')
+                right_img_path = right_img_path.replace('/home/ashish/Dev','/udacity/data')
+                
                 steering_center = float(sample[3].strip())
                 steering_left = steering_center + STEERING_CORRECTION
                 steering_right = steering_center - STEERING_CORRECTION
@@ -82,6 +86,10 @@ def generator(samples, batch_size=BATCH_SIZE):
                 center_img = cv2.cvtColor(cv2.imread(center_img_path), cv2.COLOR_BGR2RGB)
                 left_img = cv2.cvtColor(cv2.imread(left_img_path), cv2.COLOR_BGR2RGB)
                 right_img = cv2.cvtColor(cv2.imread(right_img_path), cv2.COLOR_BGR2RGB)
+
+                #center_img = imread(center_img_path)
+                #left_img = imread(left_img_path)
+                #right_img = imread(right_img_path)
 
                 if NORMALIZE_BRIGHTNESS:
                     center_img = normalize_brightness(center_img)
@@ -181,7 +189,7 @@ tensorboard_loc = os.path.join(TENSORBOARD_PATH, run_name)
 checkpoint_loc = os.path.join(MODELS_PATH, 'model-{}.h5'.format(ts))
 
 earlyStopping = EarlyStopping(monitor='val_loss',
-                              patience=3,
+                              patience=5,
                               verbose=1,
                               min_delta = 0.0001,
                               mode='min')
@@ -199,7 +207,7 @@ train_generator = generator(train_samples)
 validation_generator = generator(validation_samples)
 
 model = nvidiaModel(IMG_SHAPE)
-#model = load_model(os.path.join(MODELS_PATH, 'model-1511478745.h5'))
+#model = load_model(os.path.join(MODELS_PATH, 'model-1511521285.h5'))
 optim = Adam(lr=0.0001)
 model.compile(loss='mse', optimizer=optim)
 print(model.summary())

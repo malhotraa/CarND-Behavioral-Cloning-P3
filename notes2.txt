@@ -1,0 +1,490 @@
+# Runs data
+run1 - two laps clockwise and two laps counterclockwise
+run2 - recorded recovery lap with extra tries around turns with no lane lines on left/right; also recorded recovery from edge of lane to center multiple times
+run3 - recorded recover lap with extra tries around bridge; also recorded recovery from edge of lane to center lane many times
+run4 - recorded taking turns with no lanes; seems to screw up model predictions; going to avoid using this dataset
+run5 -
+run6 - skipped
+run7 - two laps clockwise with mostly mouse steering
+run8 - recorded recovery lap; recovery from edge of lane to center multiple times; steering with mouse
+run9 -
+-----------------------------------------------------------------------------------------
+run10 - recorded smooth lap clockwise and counterclockwise; using mouse steering
+run11 - recorded smooth laps clockwise and counterclokwise around track 2
+run12 - recorded navigating sharp U, S turns going counterclockwise around track 2
+run13 - record extra data around the sharpest 3 curves in track2
+run14 - record careful driving around sharp turn 1 in track2
+run15 - record careful driving around sharp turn 2 in track2
+run16 - straight driving through finish in track2
+run17 - recorded smooth laps around track 2 clockwise and counter-clockwise
+run18 - recorded 3 smooth laps around track 2 in counterclockwise direction
+run19 - recorded careful driving around final sharp S curve in counterclockwise direction
+run20 - smooth lap around t2 counterclockwise
+run21 - smooth lap around t2 clockwise
+------------------------------------------------------------------------------------------
+
+run22 - smooth lap counterclockwise around t2
+run23 - smooth lap counterclockwise around t2
+run24 - smooth lap clockwise around t2
+run25 - smooth lap clockwise around t2
+run26 - extra drive around first sharp left turn in t2
+run27 - extra drive around sharp U turn around mipoint of t2
+run28 - extra drive around sharp S turn in t2
+run29 - extra drive around first muddy left turn in t1
+------------------------------------------------------------------------------------------
+run30 - extra drive around sharp S turn
+run31 - extra drive around sharp S turn + extra drive around sharp S turn (really slowly)
+run32 - extra drive around sharp S turn clockwise
+
+# models
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1449-run-run12,run13,run14,run15,run16,run17,run19,run1,run2,run3,-ts=1512115100
+Trying to replicate performance of model-1511224599.h5
+Train_samples.shape 11592
+Validation_samples.shape 2899
+Arch same, KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.3
+best_val_loss = 0.13916
+performance:
+    * t1:
+    * t2:
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=2115-run-run11,run12,run22,run23,run25,run30,run31,run32,run16,run1,run2,run3,-ts=1511973210
+Adding run12 data back in. Would like previous best model to navigate turns better.
+Train_samples.shape 16923
+Validation_samples.shape 4231
+Arch same, KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.4
+best_val_loss = 0.01651
+performance:
+    * t1:
+    * t2:
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1984-run-run11,run22,run23,run25,run30,run31,run32,run16,run1,run2,run3,-ts=1511935899
+Starting from previous model-1511927242.h5. Trying to reduce loss further to reach performance of model-1511521285.h5
+Train_samples.shape 15873
+Validation_samples.shape 3969
+Arch same, KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.4
+best_val_loss = 0.01626
+performance:
+    * t1:
+    * t2: cannot navigate shadows at all
+Notes:
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1984-run-run11,run22,run23,run25,run30,run31,run32,run16,run1,run2,run3,-ts=1511927242
+Train_samples.shape 15873
+Validation_samples.shape 3969
+Arch same, KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.4
+best_val_loss = 0.01715
+performance:
+    * t1:
+    * t2: cannot navgiate shadow turns early in t2
+Notes:
+
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1957-run-run11,run22,run23,run25,run30,run31,run32,run16,run1,run2,run3,-ts=1511914157
+Train_samples.shape 15659
+Validation_samples.shape 3915
+Arch same, KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.45
+best_val_loss = 0.01675
+performance:
+    * t1:
+    * t2: cannot navgiate shadow turns early in t2
+Notes:
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=2009-run-run11,run22,run23,run25,run30,run31,run32,run16,run1,run2,run3,-ts=1511903997
+Same as best performing model-1511521285.h5 except with lower KEEP_ZERO_STEERING_ANGLE_THRESHOLD
+Train_samples.shape 16079
+Validation_samples.shape 4020
+Arch same, KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.35
+best_val_loss = 0.01751
+performance:
+    * t1: does fine
+    * t2: cannot navgiate shadow turns early in t2
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=2115-run-run11,run12,run22,run23,run25,run30,run31,run32,run16,run1,run2,run3,-ts=1511885681
+Adding run12 data back in. Would like previous model to navigate turns better.
+Train_samples.shape 16923
+Validation_samples.shape 4231
+Arch same, KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.4
+best_val_loss = 0.01653
+performance:
+    * t1: did not test
+    * t2: cannot navgiate shadow turns early in t2
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1984-run-run11,run22,run23,run25,run30,run31,run32,run16,run1,run2,run3,-ts=1511521285
+Adding run11 data back in. Looks like previous model did not have enough data to learn anything.
+Train_samples.shape 15873
+Validation_samples.shape 3969
+Arch same, KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.4
+best_val_loss = 0.01584
+performance: model navigates both tracks fine @ speed 12mph
+    * t1: Model navigates track1 fine. Goes over lane markings sometimes but doesnt cross outside
+    * t2: Model navigates track2 fine. Comes close to edges a few times.
+Notes: FIRST MODEL TO NAVIGATE BOTH TRACK1 AND TRACK2
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1530-run-run22,run23,run25,run30,run31,run32,run16,run1,run2,run3,-ts=1511517380
+Removed run12 from dataset.
+Train_samples.shape 12244
+Validation_samples.shape 3061
+Arch same, KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.4
+best_val_loss = 0.13645
+performance: garbage model, constant zero prediction
+    * t1:
+    * t2:
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1661-run-run22,run23,run25,run12,run30,run31,run32,run16,run1,run2,run3,-ts=1511495999
+Added another drive clockwise around sharp S turn. Training model from scratch.
+Train_samples.shape 13294
+Validation_samples.shape 3324
+Arch same, KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.4
+best_val_loss = 0.01286 (killed early after 2 epochs with no improvement)
+performance:
+    * t1: did not test
+    * t2: fails to navigate second part of sharp S-turn
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1641-run-run22,run23,run25,run12,run30,run31,run16,run1,run2,run3,-ts=1511486376
+Started from previous model-1511478745.h5. Added another drive around sharp S turn (this time done slowly to capture more data)
+Train_samples.shape 13132
+Validation_samples.shape 3283
+Arch same, KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.4
+best_val_loss = 0.00786
+performance:
+    * t1: did not test
+    * t2: failed to navigate second part of sharp S-turn
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1603-run-run22,run23,run25,run12,run30,run31,run16,run1,run2,run3,-ts=1511478745
+Training on custom blend of data after carefully analyzing videos
+Train_samples.shape 12828
+Validation_samples.shape 3208
+Arch same, KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.4
+best_val_loss = 0.01273
+performance:
+    * t1: did not test
+    * t2: failed to navigate second part of sharp S-turn
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1155-run-run11,run12,run14,run30,run31,run16,run1,run2,run3,-ts=1511469282
+Train_samples.shape 9244
+Validation_samples.shape 2311
+Arch same, KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.5
+best_val_loss = 0.02131
+performance:
+    * t1: did not test
+    * t2: model came close to edges around sharp turns but never crossed the line; failed to navigate second part of sharp S-turn;
+notes: probably a KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.4 is best since the model seems a bit wobbly
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1263-run-run11,run12,run14,run30,run31,run16,run1,run2,run3,-ts=1511423944
+Started from previous best model-1511419039.h5 and adding another drive around sharp S turn
+Train_samples.shape 10104
+Validation_samples.shape 2527
+Arch same, KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.3
+best_val_loss = 0.01178
+performance
+    * t1: did not test
+    * t2: model comes really close to edge once; model still cannot navigate sharp S turn; model takes too wide of an arc for first part of S; needs to have tigther arc for first part in order to make it through second part
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1232-run-run11,run12,run14,run30,run16,run1,run2,run3,-ts=1511419039
+Started from best performing model-1511224599.h5; removed run13, run15 from dataset as they might be leading to overfitting
+Train_samples.shape 9862
+Validation_samples.shape 2466
+Arch same, KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.3
+best_val_loss = 0.01373
+performance
+    * t1: did not test
+    * t2: model cannot navigate sharp S turn
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1340-run-run11,run12,run13,run14,run15,run16,run1,run2,run3,run30,-ts=1511390315
+Started from best performing model-1511224599.h5
+Train_samples.shape 10724
+Validation_samples.shape 2682
+arch same as before
+KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.3
+NORMALIZE_BRIGHTNESS = False (removing this since it didnt help in last run)
+best_val_loss: 0.01454
+performance:
+    * t1: did not test
+    * t2: car cant make it through second part of final S curve; looks like it makes it through if it sticks to center of lane throughout the curve; currently veers off to the right after first part of S; need to fix that
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1324-run-run11,run12,run13,run14,run15,run16,run1,run2,run3,-ts=1511373939
+Adding brightness normalization to best model-1511224599.h5 (didnt actually start training from model-1511224599.h5)
+Train_samples.shape 10593
+Validation_samples.shape 2649
+arch same as before
+KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.3
+NORMALIZE_BRIGHTNESS = True
+best_val_loss: 0.02044
+performance:
+    * t1: goes around fine
+    * t2: cannot navigate any shadows; fails to navigate sharp U-turns
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1987-run-run1,run2,run3,run22,run23,run24,run25,run12,run13,run14,run15,-ts=1511326629
+Using adam with LR 0.0001 and changed extra drive data to be run12-run15
+Train_samples.shape 15900
+Validation_samples.shape 3975
+Arch same as before
+KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.3
+best_val_loss: 0.01114
+performance:
+    * t1:
+    * t2: model fails to navigate first sharp U turn; fails to navigate sharp S turn
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1785-run-run1,run2,run3,run22,run23,run24,run25,run26,run27,run28,run29,-ts=1511324967
+Added extra driving around sharp turns in t2, added extra driving around muddy left turn in t1
+Train_samples.shape 14283
+Validation_samples.shape 3571
+Arch same as before
+KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.3
+best_val_loss: 0.12448
+performance:
+    * t1: did not test
+    * t2: did not test
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1729-run-run1,run2,run3,run22,run23,run24,run25,-ts=1511309022
+Training model with newly collected data (2 laps each around t2 clockwise and counterclockwise)
+Train_samples.shape 13836
+Validation_samples.shape 3459
+Arch same as before
+KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.3
+best_val_loss: 0.01069
+performance:
+    * t1: navigates t1 fine. Comes close to edge at around first muddy turn but gets through ok.
+    * t2: cannot navigate sharp U/S turns in t2
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1498-run-run12,run13,run14,run15,run20,run21,run19,run1,run2,run3,-ts=1511253430
+Using only one lap clockwise and counterclockwise training data for t2.
+Train_samples.shape 11989
+Validation_samples.shape 2998
+Arch same as before
+KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.3
+best_val_loss: 0.14404
+performance:
+    * t1: did not test
+    * t2: garbage; constant 0 prediction
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1449-run-run12,run13,run14,run15,run16,run17,run19,run1,run2,run3,-ts=1511248883
+Starting from model-1511240981.h5 as it performed almost perfectly. Adding some more driving data around sharp S curves.
+Train_samples.shape 11592
+Validation_samples.shape 2899
+Arch same as before
+KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.3
+best_val_loss: 0.01530
+performance:
+    * t1: model goes around t1 fine
+    * t2: model fails to navigate sharp U-turn and second part of sharp S-turn
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1393-run-run12,run13,run14,run15,run16,run17,run1,run2,run3,-ts=1511240981
+Train_samples.shape 11146
+Validation_samples.shape 2787
+Arch same as before
+KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.3
+After looking at videos from run11, run17, run18 I am removing run18 as it seems to be adding no new info to the learning process
+best_val_loss: 0.01837
+performance:
+    * t1: model goes around track1 just fine
+    * t2: model cannot navigate second part of sharp S curve. Also fails to navigate mild left curve right after
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=2225-run-run12,run13,run14,run15,run16,run17,run18,run1,run2,run3,-ts=1511233088
+Train_samples.shape 17801
+Validation_samples.shape 4451
+arch:
+    x = Lambda(lambda img: (img / 255.0) - 0.5)(inputs)
+    x = Cropping2D(cropping=((70, 25), (0, 0)))(x)
+    x = Conv2D(24, (5, 5), strides=(2, 2), activation='relu', name='conv1')(inputs)
+    x = Conv2D(36, (5, 5), strides=(2, 2), activation='relu', name='conv2')(x)
+    x = Conv2D(48, (5, 5), strides=(2, 2), activation='relu', name='conv3')(x)
+    x = Conv2D(64, (3, 3), activation='relu', name='conv4')(x)
+    x = Conv2D(64, (3, 3), activation='relu', name='conv5')(x)
+    x = Flatten(name='flatten')(x)
+    x = Dropout(0.5)(x)
+    x = Dense(100, activation='relu', name='fc1')(x)
+    x = Dense(50, activation='relu', name='fc2')(x)
+    x = Dense(10, activation='relu', name='fc3')(x)
+    output = Dense(1, name='output_layer')(x)
+dropped 30% of zero steering angle data with np.random.seed(999)
+KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.3
+best_val_loss: 0.06880
+performance:
+    * t1: model randomly swerved out of lane to the right
+    * t2: did not test
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1324-run-run11,run12,run13,run14,run15,run16,run1,run2,run3,-ts=1511224599
+Trying new arch with the same params as best model until now model-1511040588.h5
+Train_samples.shape 10593
+Validation_samples.shape 2649
+arch:
+    x = Lambda(lambda img: (img / 255.0) - 0.5)(inputs)
+    x = Cropping2D(cropping=((70, 25), (0, 0)))(x)
+    x = Conv2D(24, (5, 5), strides=(2, 2), activation='relu', name='conv1')(inputs)
+    x = Conv2D(36, (5, 5), strides=(2, 2), activation='relu', name='conv2')(x)
+    x = Conv2D(48, (5, 5), strides=(2, 2), activation='relu', name='conv3')(x)
+    x = Conv2D(64, (3, 3), activation='relu', name='conv4')(x)
+    x = Conv2D(64, (3, 3), activation='relu', name='conv5')(x)
+    x = Flatten(name='flatten')(x)
+    x = Dropout(0.5)(x)
+    x = Dense(100, activation='relu', name='fc1')(x)
+    x = Dense(50, activation='relu', name='fc2')(x)
+    x = Dense(10, activation='relu', name='fc3')(x)
+    output = Dense(1, name='output_layer')(x)
+dropped 30% of zero steering angle data with np.random.seed(999)
+KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.3
+best_val_loss: 0.02005
+performance:
+    * t1: model navigates track1 ok. comes to close to edges sometimes but makes it through.
+    * t2: model navigates almost all of track2. fails at second turn of the final S curve. theres a shadow near that curve that seems to be throwing the model off. Going to try to collect mode data there.
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=3449-run-run1,run2,run3,run7,run8,run10,run11,run12,run13,run14,run15,run16,run17,run18,-ts=1511201716
+Train_samples.shape 27597
+Validation_samples.shape 6900
+Same as previous run except throwing away 30% of zero steering angle data and starting training from previous model model-1511157259.h5
+best_val_loss: 0.02984
+performance:
+    * t1: cannot make it through sharp right turn with red stripes
+    * t2: cannot make it through sharp U/S - turns
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=3645-run-run1,run2,run3,run7,run8,run10,run11,run12,run13,run14,run15,run16,run17,run18,-ts=1511157259
+Train_samples.shape 29164
+Validation_samples.shape 7291
+Training with all the valid data collected until now from t1 and t2
+best_val_loss: missing
+performance:
+    * t1: did not test
+    * t2: model cannot navigate first sharp U turn on t2
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1071-run-run18,run12,run13,run16,-ts=1511129477
+Train_samples.shape 8573
+Validation_samples.shape 2144
+arch same as before
+STEERING_CORRECTION = 0.2 ADD_FLIPS = True ADD_SIDE_VIEWS = True KEEP_ZERO = True
+Trying to train on just track2 data
+best_val_loss: 0.02912
+performance:
+    * t1: model goes off track before bridge to the right
+    * t2: model cannot navigate sharp left turn
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1215-run-run11,run12,run13,run14,run15,run16,run1,run2,run3,-ts=1511075165
+Train_samples.shape 9727
+Validation_samples.shape 2432
+arch same as before
+dropped 50% of zero steering angle data with np.random.seed(999)
+KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.5
+best_val_loss: 0.04739
+performance:
+    * t1: model gets through track1 ok; drives a little close to the edges sometimes
+    * t2: fails at first sharp turn in track2
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1324-run-run11,run12,run13,run14,run15,run16,run1,run2,run3,-ts=1511040588
+Train_samples.shape 10593
+Validation_samples.shape 2649
+arch same as before
+dropped 30% of zero steering angle data with np.random.seed(999)
+KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.3
+best_val_loss: 0.03946
+performance:
+    * t1: model navigates track1 mostly ok; comes too close to edges a few times but its ok
+    * t2: model navigates most of track2 ok. cannot navigate sharp S turn still
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1107-run-run11,run12,run13,run14,run15,run16,run1,run2,run3,-ts=1511035997
+Train_samples.shape 8859
+Validation_samples.shape 2215
+arch same as before
+dropped 70% of zero steering angle data with np.random.seed(999)
+KEEP_ZERO_STEERING_ANGLE_THRESHOLD = 0.7
+best_val_loss: 0.17201
+performance: garbage; constant 0 prediction
+    * t1:
+    * t2:
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1490-run-run11,run12,run13,run14,run15,run16,run1,run2,run3,-ts=1511032728
+starting from previous model-1510987724.h5. added data to navigate sharp turns in track2
+Train_samples.shape 11923
+Validation_samples.shape 2981
+arch same as before
+best_val_loss: 0.03061
+performance:
+    * t1: did not test
+    * t2: car fails to navigate sharp turns in track2
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=1449-run-run11,run12,run13,run1,run2,run3,-ts=1510987724
+Train_samples.shape 11597
+Validation_samples.shape 2900
+arch same as before
+best_val_loss: 0.03134
+performance:
+    * t1: car drives fine around track1. runs over the lane markings a few times but recovers quickly.
+    * t2: car drives fine around most of track2. cannot navigate sharp U, S turns. Going to have to collect more data and re-train.
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=585-run-run11,run12,-ts=1510977182
+arch:
+    x = Lambda(lambda img: (img / 255.0) - 0.5)(inputs)
+    x = Cropping2D(cropping=((70, 25), (0, 0)))(x)
+    x = Conv2D(24, (5, 5), strides=(2, 2), activation='relu', name='conv1')(inputs)
+    x = Conv2D(36, (5, 5), strides=(2, 2), activation='relu', name='conv2')(x)
+    x = Conv2D(48, (5, 5), strides=(2, 2), activation='relu', name='conv3')(x)
+    x = Conv2D(64, (3, 3), activation='relu', name='conv4')(x)
+    x = Conv2D(64, (3, 3), activation='relu', name='conv5')(x)
+    x = Flatten(name='flatten')(x)
+    x = Dense(100, activation='relu', name='fc1')(x)
+    x = Dropout(0.5)(x)
+    x = Dense(50, activation='relu', name='fc2')(x)
+    x = Dropout(0.5)(x)
+    x = Dense(10, activation='relu', name='fc3')(x)
+    x = Dropout(0.5)(x)
+    output = Dense(1, name='output_layer')(x)
+Train_samples.shape 4687
+Validation_samples.shape 1172
+best_val_loss: 0.04480
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=454-run-run11,-ts=1510972631
+performance:
+    * t1: model doesnt make it through track1. car drives too close to the edges. looks like fine-tuning messed up the weights for track1. Also the steering is extremely wiggly. Not a smooth ride.
+    * t2: model goes slightly offroad around sharp left turn. model goes slightly off road on sharp left turn again. model goes off edge again near S curve. Probably need to augment dataset with those specific curves.
+
+arch:
+    x = Lambda(lambda img: (img / 255.0) - 0.5)(inputs)
+    x = Cropping2D(cropping=((70, 25), (0, 0)))(x)
+    x = Conv2D(24, (5, 5), strides=(2, 2), activation='relu', name='conv1')(inputs)
+    x = Conv2D(36, (5, 5), strides=(2, 2), activation='relu', name='conv2')(x)
+    x = Conv2D(48, (5, 5), strides=(2, 2), activation='relu', name='conv3')(x)
+    x = Conv2D(64, (3, 3), activation='relu', name='conv4')(x)
+    x = Conv2D(64, (3, 3), activation='relu', name='conv5')(x)
+    x = Flatten(name='flatten')(x)
+    x = Dense(100, activation='relu', name='fc1')(x)
+    x = Dropout(0.5)(x)
+    x = Dense(50, activation='relu', name='fc2')(x)
+    x = Dropout(0.5)(x)
+    x = Dense(10, activation='relu', name='fc3')(x)
+    x = Dropout(0.5)(x)
+    output = Dense(1, name='output_layer')(x)
+Start from model-1510873652.h5 which performs flawlessly on track 1.
+Train_samples.shape 3636
+Validation_samples.shape 909
+best_val_loss: 0.08442
+performance:
+    * t1: model drives fine around track1. some wiggliness.
+    * t2: model drives ok around most of track. Fails to navigate sharp U,S turns. Going to try to fine-tune using run12 collected data.
+
+model=nvidia-batch_size=8-num_epoch=50-steps_per_epoch=454-run-run11,-ts=1510960499
+arch:
+    x = Lambda(lambda img: (img / 255.0) - 0.5)(inputs)
+    x = Cropping2D(cropping=((70, 25), (0, 0)))(x)
+    x = Conv2D(24, (5, 5), strides=(2, 2), activation='relu', name='conv1')(inputs)
+    x = Conv2D(36, (5, 5), strides=(2, 2), activation='relu', name='conv2')(x)
+    x = Conv2D(48, (5, 5), strides=(2, 2), activation='relu', name='conv3')(x)
+    x = Conv2D(64, (3, 3), activation='relu', name='conv4')(x)
+    x = Conv2D(64, (3, 3), activation='relu', name='conv5')(x)
+    x = Flatten(name='flatten')(x)
+    x = Dense(100, activation='relu', name='fc1')(x)
+    x = Dropout(0.5)(x)
+    x = Dense(50, activation='relu', name='fc2')(x)
+    x = Dropout(0.5)(x)
+    x = Dense(10, activation='relu', name='fc3')(x)
+    output = Dense(1, name='output_layer')(x)
+Train_samples.shape 3636
+Validation_samples.shape 909
+First model trained on track 2 data
+best_val_loss: 0.05060
+performance:
+    * t1: failed around first sharp left turn with no right lane (mud)
+    * t2: failed around first sharp left U-turn
+
+TODO:
+* Try changing network arch; increase number of dense layers - seems like other people have had success with similar model; dont need to change this for now
+* Change kernel size in conv layers
+* Try histogram equalization during train and test time
